@@ -2,6 +2,10 @@ package com.erik.ikeashoppinglist.demo.entity;
 
 
 import com.erik.ikeashoppinglist.demo.respository.ShoppingListRepository;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
@@ -18,7 +22,8 @@ public class Customer {
     @Size(min=3)
     private String name;
 
-    @OneToMany(mappedBy="customer", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="customer", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<ShoppingList> shoppingLists;
 
     private Boolean hidden = false;

@@ -35,8 +35,8 @@ public class ShoppingList {
         return items;
     }
 
-    public void addItem(Item item){
-        ShoppingListItem shoppingListItem = new ShoppingListItem(this, item);
+    public void addItem(Item item, int amount){
+        ShoppingListItem shoppingListItem = new ShoppingListItem(this, item, amount);
         items.add(shoppingListItem);
         item.getShoppingLists().add(shoppingListItem);
     }
@@ -54,8 +54,7 @@ public class ShoppingList {
         }
     }
 
-    @JsonIgnore
-    @ManyToOne(fetch=FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
     private Customer customer;
 
     //@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})

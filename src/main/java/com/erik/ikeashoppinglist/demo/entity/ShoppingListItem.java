@@ -3,6 +3,8 @@ package com.erik.ikeashoppinglist.demo.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity(name = "ShoppingListItem")
@@ -23,16 +25,18 @@ public class ShoppingListItem {
     private Item item;
 
     @Column(name="amount")
+    @Size(min = 0, max = 10)
     private Integer amount;
 
     public ShoppingListItem() {
     }
 
-    public ShoppingListItem(ShoppingList shoppingList, Item item) {
+    public ShoppingListItem(ShoppingList shoppingList, Item item, int amount) {
         super();
         this.shoppingList = shoppingList;
         this.item = item;
         this.id = new ShoppingListItemId(shoppingList.getId(), item.getId());
+        this.amount = amount;
     }
 
     public ShoppingListItemId getId() {
