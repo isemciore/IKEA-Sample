@@ -63,12 +63,15 @@
                 <div ng-controller="SearchStuff">
                     <form name="searchItemForm">
                         <p>Search for item</p>
-                        <input type="text" ng-model="search_term" placeholder="Search for item" required/>
-                        <button ng-click="searchForItem()" ng-disabled="searchItemForm.$invalid">Search</button>
+                        <input type="text" ng-model="customer_search_term" placeholder="Search for Customer" required/>
+                        <button ng-click="searchForCustomer()" ng-disabled="searchItemForm.$invalid">Search</button>
                     </form>
                     <p>Search result:</p>
-                    <p>Searched for: {{search_term}}</p>
-                    <pre>{{item_search_result | json}}</pre>
+                    <p>Searched for: {{customer_search_term}}</p>
+                    <hr/>
+                    <p> Found in Customer DB</p>
+                    <pre>{{customer_search_result | json}}</pre>
+
                 </div>
             </div>
 

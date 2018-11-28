@@ -1,6 +1,5 @@
 package com.erik.ikeashoppinglist.demo.respository;
 
-import com.erik.ikeashoppinglist.demo.entity.Customer;
 import com.erik.ikeashoppinglist.demo.misc_com_fmt.SearchCriteria;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -9,20 +8,20 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-public class CustomerSpecification implements Specification<Customer> {
+public class SearchSpecification<T> implements Specification<T> {
 
     private SearchCriteria criteria;
 
-    public CustomerSpecification() {
+    public SearchSpecification() {
     }
 
-    public CustomerSpecification(SearchCriteria criteria) {
+    public SearchSpecification(SearchCriteria criteria) {
         this.criteria = criteria;
     }
 
     @Override
     public Predicate toPredicate
-            (Root<Customer> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+            (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
         if (criteria.getOperation().equalsIgnoreCase(">")) {
             return builder.greaterThanOrEqualTo(

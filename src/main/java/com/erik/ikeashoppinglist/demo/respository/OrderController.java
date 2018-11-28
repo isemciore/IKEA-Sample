@@ -37,7 +37,22 @@ public class OrderController {
     @Autowired
     private ShoppingListRepository shoppingListRepository;
 
-    @ApiOperation(value="Views a list of all Customers")
+    private <T> Specification<T> getSearchSpecification(String search){
+        SearchSpecificationBuilder<T> builder = new SearchSpecificationBuilder<T>();
+        //%21: !, %26: &, %7C: |
+        // matcher splits at the symbols |&,!
+        //example: VARNAME:VALUE!VARNAME2<VALUE2
+        //Searching for entity matching name VARNAME containing VALUE and VARNAME2 with value less than VALUE2
+        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?)(,|!|&|\\|)", Pattern.UNICODE_CHARACTER_CLASS);
+        Matcher matcher = pattern.matcher(search + ",");
+        while (matcher.find()) {
+            builder.with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
+        }
+
+        return builder.build();
+    }
+
+    @ApiOperation(value="Views a list of all Customers or search")
     @GetMapping("/customer") // Todo templify this somehow...
     public List<Customer> retrieveAllCustomer(@RequestParam(value = "search", required = false) String search){
         List<Customer> customers_data;
@@ -45,16 +60,8 @@ public class OrderController {
             customers_data = customerRepository.findAll();
 
         }else{
-            CustomerSpecificationBuilder builder = new CustomerSpecificationBuilder();
-            //%21: !, %26: &, %7C: |
-            Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?)(,|!|&|\\|)", Pattern.UNICODE_CHARACTER_CLASS);
-            Matcher matcher = pattern.matcher(search + ",");
-            while (matcher.find()) {
-                builder.with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
-            }
-
-            Specification<Customer> spec = builder.build();
-            return customerRepository.findAll(spec);
+            Specification<Customer> spec = getSearchSpecification(search);
+            customers_data = customerRepository.findAll(spec);
         }
         return customers_data;
     }
@@ -177,10 +184,18 @@ public class OrderController {
         return new ResponseEntity<>("Updated table", HttpStatus.CREATED);
     }
 
+
     @GetMapping("/item")
-    @ApiOperation(value="View a specific item")
-    public List<Item> retrieveAllItem(){
-        List<Item> item_data= itemRepository.findAll();
+    @ApiOperation(value="View a specific item or search")
+    public List<Item> retrieveAllItem(@RequestParam(value="search", required = false) String search){
+        List<Item> item_data;
+        if(search == null){
+            item_data = itemRepository.findAll();
+
+        }else{
+            Specification<Item> spec = getSearchSpecification(search);
+            item_data =  itemRepository.findAll(spec);
+        }
         return item_data;
     }
 

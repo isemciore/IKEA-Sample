@@ -21,11 +21,11 @@ demo.controller('Background', function ($scope, $http, $location) {
 });
 
 demo.controller('SearchStuff', function($scope, $http){
-    $scope.search_term = 'TOBEIMPLEMENTED';
-    $scope.searchForItem = function(){
-        url_search = $scope.host_port_url.concat("blub");
-        $http.get(url_search).then(function (response) {
-            $scope.item_search_result = response.data;
+    $scope.customer_search_term = '';
+    $scope.searchForCustomer = function(){
+        url_c_search = $scope.host_port_url.concat("/customer?search=", $scope.search_term);
+        $http.get(url_c_search).then(function (response) {
+            $scope.customer_search_result = response.data;
         });
     };
 });
