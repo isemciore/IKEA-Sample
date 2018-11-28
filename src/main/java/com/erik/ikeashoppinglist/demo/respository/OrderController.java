@@ -6,10 +6,7 @@ import com.erik.ikeashoppinglist.demo.entity.Item;
 import com.erik.ikeashoppinglist.demo.entity.ShoppingList;
 import com.erik.ikeashoppinglist.demo.entity.ShoppingListItem;
 import com.erik.ikeashoppinglist.demo.misc_com_fmt.Amount;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -54,7 +51,8 @@ public class OrderController {
 
     @ApiOperation(value="Views a list of all Customers or search")
     @GetMapping("/customer") // Todo templify this somehow...
-    public List<Customer> retrieveAllCustomer(@RequestParam(value = "search", required = false) String search){
+    public List<Customer> retrieveAllCustomer(@ApiParam(value="Format: VAR(:<>)VALUE(,!?&) \nExample: name:Erik&id<20", name="search")
+                                                  @RequestParam(value = "search", required = false) String search){
         List<Customer> customers_data;
         if(search == null){
             customers_data = customerRepository.findAll();
@@ -187,7 +185,8 @@ public class OrderController {
 
     @GetMapping("/item")
     @ApiOperation(value="View a specific item or search")
-    public List<Item> retrieveAllItem(@RequestParam(value="search", required = false) String search){
+    public List<Item> retrieveAllItem(@ApiParam(value="Format: VAR(:<>)VALUE(,!?&) \nExample: name:Spoon&id<20", name="search")
+                                          @RequestParam(value="search", required = false) String search){
         List<Item> item_data;
         if(search == null){
             item_data = itemRepository.findAll();

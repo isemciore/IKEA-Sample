@@ -6,10 +6,10 @@ demo.controller('Background', function ($scope, $http, $location) {
     $scope.raw_data = 'n/a';
     $scope.raw_status = 'n/a';
     $scope.raw_header = 'n/a';
-    $scope.blub = '12312312';
 
     // Pull this from enviromental variable?
     // Should point to the adress of tomcat server
+    //Tbd Always localhost?
     $scope.host_port_url = "http://".concat($location.host(), ":", $location.port());
 
     $scope.bg_logger = function(data, status, header){
@@ -104,10 +104,6 @@ demo.controller('PostObject', function($scope, $http){
         new_item_url = $scope.host_port_url.concat('/shopping_list/', $scope.add_shopping_list_id,
                                                    '/item/', $scope.add_item_id,
                                                    '?amount=', $scope.item_amount);
-        var newAmount = {
-            "amount": $scope.item_amount
-        };
-        var parameter = JSON.stringify(newAmount);
         $http.post(new_item_url).
             success(function(data, status, headers, config) {
                 $scope.bg_logger(data, status, headers);
