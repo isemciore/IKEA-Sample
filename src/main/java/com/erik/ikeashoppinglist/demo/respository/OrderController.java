@@ -5,17 +5,20 @@ import com.erik.ikeashoppinglist.demo.entity.Customer;
 import com.erik.ikeashoppinglist.demo.entity.Item;
 import com.erik.ikeashoppinglist.demo.entity.ShoppingList;
 import com.erik.ikeashoppinglist.demo.entity.ShoppingListItem;
-import com.erik.ikeashoppinglist.demo.misc_com_fmt.Amount;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -49,6 +52,21 @@ public class OrderController {
         return builder.build();
     }
 
+    private <T, K> List<T> searchForWord(SearchableRepository<T, K> repository, String search){
+        Specification<T> spec = getSearchSpecification(search);
+        List<T> search_result;
+        if (spec == null){
+            search_result = new ArrayList<>();
+        } else {
+            try {
+                search_result = repository.findAll(spec);
+            } catch (InvalidDataAccessApiUsageException e) {
+                search_result = new ArrayList<>();
+            }
+        }
+        return search_result;
+    }
+
     @ApiOperation(value="Views a list of all Customers or search")
     @GetMapping("/customer") // Todo templify this somehow...
     public List<Customer> retrieveAllCustomer(@ApiParam(value="Format: VAR(:<>)VALUE(,!?&) \nExample: name:Erik&id<20", name="search")
@@ -58,8 +76,7 @@ public class OrderController {
             customers_data = customerRepository.findAll();
 
         }else{
-            Specification<Customer> spec = getSearchSpecification(search);
-            customers_data = customerRepository.findAll(spec);
+            customers_data = searchForWord(customerRepository, search);
         }
         return customers_data;
     }
@@ -192,8 +209,7 @@ public class OrderController {
             item_data = itemRepository.findAll();
 
         }else{
-            Specification<Item> spec = getSearchSpecification(search);
-            item_data =  itemRepository.findAll(spec);
+            item_data = searchForWord(itemRepository, search);
         }
         return item_data;
     }

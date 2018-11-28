@@ -9,7 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ItemRepository extends JpaRepository<Item, Integer>, JpaSpecificationExecutor<Item> {
+public interface ItemRepository extends SearchableRepository<Item, Integer>{
+//JpaRepository<Item, Integer>, JpaSpecificationExecutor<Item> {
     @Query("SELECT i FROM Item i where i.itemIdentification = :itemIdentification")
     public List<Item> findItemByItemIdentification(@Param("itemIdentification") String itemIdentification);
 }

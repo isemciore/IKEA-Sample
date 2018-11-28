@@ -17,6 +17,9 @@ public class ShoppingList {
     private Integer id;
     private String name;
 
+    @OneToOne(fetch=FetchType.EAGER)
+    private Customer customer;
+
     @Override
     public String toString() {
         return "ShoppingList{" +
@@ -56,8 +59,6 @@ public class ShoppingList {
         }
     }
 
-    @OneToOne(fetch=FetchType.EAGER)
-    private Customer customer;
 
     //@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     //@JoinTable(name="shopping_list_item",
@@ -84,8 +85,9 @@ public class ShoppingList {
     public ShoppingList() {
     }
 
-    public ShoppingList(String name) {
+    public ShoppingList(String name, Customer customer) {
         this.name = name;
+        this.customer = customer;
     }
 
     @Override

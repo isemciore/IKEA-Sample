@@ -61,16 +61,26 @@
 
             <div class = "column">
                 <div ng-controller="SearchStuff">
-                    <form name="searchItemForm">
+                    <form name="searchCustomerForm">
                         <p>Search for item</p>
                         <input type="text" ng-model="customer_search_term" placeholder="Search for Customer" required/>
-                        <button ng-click="searchForCustomer()" ng-disabled="searchItemForm.$invalid">Search</button>
+                        <button ng-click="searchForCustomer()" ng-disabled="searchCustomerForm.$invalid">Search</button>
                     </form>
                     <p>Search result:</p>
                     <p>Searched for: {{customer_search_term}}</p>
-                    <hr/>
                     <p> Found in Customer DB</p>
                     <pre>{{customer_search_result | json}}</pre>
+                    <hr/>
+                    <form name="searchItemForm">
+                        <p>Search for item</p>
+                        <input type="text" ng-model="item_search_term" placeholder="Search for Item" required/>
+                        <button ng-click="searchForItem()" ng-disabled="searchItemForm.$invalid">Search</button>
+                    </form>
+                    <p>Search result:</p>
+                    <p>Searched for: {{item_search_term}}</p>
+                    <p> Found in Customer DB</p>
+                    <pre>{{item_search_result | json}}</pre>
+
 
                 </div>
             </div>

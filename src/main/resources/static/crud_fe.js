@@ -23,9 +23,17 @@ demo.controller('Background', function ($scope, $http, $location) {
 demo.controller('SearchStuff', function($scope, $http){
     $scope.customer_search_term = '';
     $scope.searchForCustomer = function(){
-        url_c_search = $scope.host_port_url.concat("/customer?search=", $scope.search_term);
+        url_c_search = $scope.host_port_url.concat("/customer?search=", $scope.customer_search_term);
         $http.get(url_c_search).then(function (response) {
             $scope.customer_search_result = response.data;
+        });
+    };
+
+    $scope.item_search_term = '';
+    $scope.searchForItem = function(){
+        url_i_search = $scope.host_port_url.concat("/item?search=", $scope.item_search_term);
+        $http.get(url_i_search).then(function (response) {
+            $scope.item_search_result = response.data;
         });
     };
 });

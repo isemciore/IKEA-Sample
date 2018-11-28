@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, Integer>, JpaSpecificationExecutor<Customer> {
+public interface CustomerRepository extends SearchableRepository<Customer, Integer>{
+//JpaRepository<Customer, Integer>, JpaSpecificationExecutor<Customer> {
 
     // @Query("SELECT p FROM Partner p JOIN FETCH p.tenants WHERE p.id=(:id)")
     //    public Partner findByIdFetchTenant(@Param("id") Long id);
