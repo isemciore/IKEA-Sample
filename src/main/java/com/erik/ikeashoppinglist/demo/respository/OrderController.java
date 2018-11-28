@@ -157,11 +157,12 @@ public class OrderController {
 
         Optional<ShoppingList> shoppingList_lookup = shoppingListRepository.findById(shopping_id);
         if (!shoppingList_lookup.isPresent()){
-            throw new InvalidKeyException("shopping id: " + shopping_id);
+            return new ResponseEntity<>("Failed to find key", HttpStatus.BAD_REQUEST);
         }
 
         shoppingListRepository.delete(shoppingList_lookup.get());
-        return new ResponseEntity<>("Updated table", HttpStatus.OK);
+        return new ResponseEntity<>("Updated table and removed shopping list id: " +
+                String.valueOf(shopping_id), HttpStatus.OK);
     }
 
     @PostMapping(value = {"/shopping_list/{shopping_id}/item/{item_id}"})
