@@ -4,4 +4,4 @@ insert into item values (3000, '123-543-22', 'Fork')
 insert into item values (3001, '123-543-99', 'Spoon')
 
 
-insert into shopping_list_item (shopping_list_id, item_id) values (2000, 3000)
+insert into shopping_list_item (shopping_list_id, item_id, amount) values (2000, 3000, 10)

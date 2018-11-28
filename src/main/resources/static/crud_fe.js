@@ -7,7 +7,9 @@ demo.controller('Background', function ($scope, $http, $location) {
     $scope.raw_status = 'n/a';
     $scope.raw_header = 'n/a';
     $scope.blub = '12312312';
-    $scope.overview_customer = 'n/a';
+
+    // Pull this from enviromental variable?
+    // Should point to the adress of tomcat server
     $scope.host_port_url = "http://".concat($location.host(), ":", $location.port());
 
     $scope.bg_logger = function(data, status, header){
@@ -18,12 +20,27 @@ demo.controller('Background', function ($scope, $http, $location) {
 
 });
 
-demo.controller('PostObject', function($scope, $http){
-    $scope.counter = 1;
-    $scope.increment = function () {
-        $scope.counter++;
+demo.controller('SearchStuff', function($scope, $http){
+    $scope.search_term = 'TOBEIMPLEMENTED';
+    $scope.searchForItem = function(){
+        url_search = $scope.host_port_url.concat("blub");
+        $http.get(url_search).then(function (response) {
+            $scope.item_search_result = response.data;
+        });
     };
+});
 
+demo.controller('DeleteObject', function($scope, $http){
+    $scope.removeShoppingList = function(){
+        $scope.counter++;
+        delete_list_id = $scope.delete_shopping_list_id;
+        url_shopping_list = $scope.host_port_url.concat("/shopping_list/", delete_list_id);
+        $scope.delete_url = url_shopping_list;
+        $http.delete(url_shopping_list);
+    };
+});
+
+demo.controller('PostObject', function($scope, $http){
     $scope.addCustomer = function(){
         url_customer = $scope.host_port_url.concat('/customer');
         $scope.blub = url_customer;
@@ -85,12 +102,13 @@ demo.controller('PostObject', function($scope, $http){
 
     $scope.addItemToShoppingList = function(){
         new_item_url = $scope.host_port_url.concat('/shopping_list/', $scope.add_shopping_list_id,
-                                                   '/item/', $scope.add_item_id);
+                                                   '/item/', $scope.add_item_id,
+                                                   '?amount=', $scope.item_amount);
         var newAmount = {
-            "amount": $scope.item_amount,
+            "amount": $scope.item_amount
         };
         var parameter = JSON.stringify(newAmount);
-        $http.post($scope.host_port_url.concat('/shopping_list/2000/item/3001'), parameter).
+        $http.post(new_item_url).
             success(function(data, status, headers, config) {
                 $scope.bg_logger(data, status, headers);
                 console.log('success');
@@ -104,22 +122,24 @@ demo.controller('PostObject', function($scope, $http){
 
 
 demo.controller('GetData', function($scope, $http){
-    url_customer = $scope.host_port_url.concat('/customer/');
     $scope.updateOverviewCustomer = function () {
+        url_customer = $scope.host_port_url.concat('/customer/');
         $http.get(url_customer).then(function (response) {
             $scope.overview_customer = response.data;
         });
     };
-    url_item = $scope.host_port_url.concat('/item/');
-    $scope.updateOverviewCustomer = function () {
-        $http.get(url_customer).then(function (response) {
-            $scope.overview_customer = response.data;
+    $scope.updateOverviewItem = function () {
+        url_item = $scope.host_port_url.concat('/item/');
+        $http.get(url_item).then(function (response) {
+            $scope.overview_item = response.data;
         });
     };
-    url_shopping_list = $scope.host_port_url.concat('/shopping_list/');
-    $scope.updateOverviewCustomer = function () {
-        $http.get(url_customer).then(function (response) {
-            $scope.overview_customer = response.data;
+    $scope.debug_mememmeme = 0;
+    $scope.updateOverviewShoppingList = function () {
+        url_shopping_list = $scope.host_port_url.concat('/shopping_list/');
+        $scope.debug_mememmeme++;
+        $http.get(url_shopping_list).then(function (response) {
+            $scope.overview_shopping_list = response.data;
         });
     };
 });

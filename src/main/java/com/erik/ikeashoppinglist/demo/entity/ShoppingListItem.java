@@ -1,14 +1,17 @@
 package com.erik.ikeashoppinglist.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity(name = "ShoppingListItem")
 @Table(name = "shopping_list_item")
+@ApiModel(description = "Keep tracks of the relation between Shopping list and Item")
 public class ShoppingListItem {
 
     @Id
@@ -25,14 +28,18 @@ public class ShoppingListItem {
     private Item item;
 
     @Column(name="amount")
-    @Size(min = 0, max = 10)
-    private Integer amount;
+    @NotNull(message="Maximum of 10 of one type of item is allowed")
+    private int amount;
 
     public ShoppingListItem() {
     }
 
     public ShoppingListItem(ShoppingList shoppingList, Item item, int amount) {
         super();
+        if (amount < 0 || amount > 10){
+            throw new IllegalArgumentException("Expected a value between 0 and 10");
+        }
+
         this.shoppingList = shoppingList;
         this.item = item;
         this.id = new ShoppingListItemId(shoppingList.getId(), item.getId());

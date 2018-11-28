@@ -1,11 +1,13 @@
 package com.erik.ikeashoppinglist.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.*;
 
@@ -18,13 +20,18 @@ public class Item {
 
     @Id
     @GeneratedValue
+    @ApiModelProperty(notes = "Database internally used number", required = true)
+    @NotNull
     private Integer id; //Internally use only for DB
 
     // "Searchable number"
     @NaturalId
     @Pattern(regexp = item_id_pattern)
+    @ApiModelProperty(notes = "The identificaiton number customer sees", required = true)
+    @NotNull
     private String itemIdentification;
 
+    @ApiModelProperty(notes = "The name of the product", required = true)
     private String name;
 
     @JsonIgnore
@@ -79,7 +86,6 @@ public class Item {
     //public void setShoppingLists(List<ShoppingListItem> shoppingLists) {
     //    this.shoppingLists = shoppingLists;
     //}
-
     @Override
     public String toString() {
         return "Item{" +

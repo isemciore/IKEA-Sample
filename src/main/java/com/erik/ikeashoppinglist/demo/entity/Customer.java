@@ -22,7 +22,8 @@ public class Customer {
     @Size(min=3)
     private String name;
 
-    @OneToMany(mappedBy="customer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="customer", cascade = {CascadeType.ALL},
+            fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ShoppingList> shoppingLists;
 

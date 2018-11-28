@@ -6,14 +6,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
     <script src="crud_fe.js"></script>
 </head>
-    <body>
-        <div class="row" ng-controller="Background">
-            <p>{{blub}}   </p>
-            <p>{{raw_data}}   </p>
-            <p>{{raw_status}}   </p>
-            <p>{{raw_header}}   </p>
-            <br>
-            <br>
+    <body ng-controller="Background">
+        <div class="row">
 
             <div class="column">
                 <div ng-controller="PostObject">
@@ -29,7 +23,6 @@
                         Customer
                         <form name="createCustomerForm">
                             <input type="number" ng-model="customer_id" placeholder="Customer id" required/>
-                            Shopping list name
                             <input type="text" ng-model="shopping_list_name" placeholder="Name it", required/>
                             <button ng-click="addShoppingList()" ng-disabled="createCustomerForm.$invalid">Add Shopping List</button>
                         </form>
@@ -55,16 +48,59 @@
                         </form>
                     </div>
                 </div>
+                <hr />
+                <div ng-controller="DeleteObject">
+                    <p>Delete List</p>
+                    <form name="deleteShoppingListId">
+                        <input type="number" ng-model="delete_shopping_list_id" placeholder="List to Delete" required/>
+                        <button ng-click="removeShoppingList()" ng-disabled="deleteShoppingListId.$invalid">Delete!</button>
+                    </form>
+                    {{delete_url}}
+                </div>
             </div>
+
+            <div class = "column">
+                <div ng-controller="SearchStuff">
+                    <form name="searchItemForm">
+                        <p>Search for item</p>
+                        <input type="text" ng-model="search_term" placeholder="Search for item" required/>
+                        <button ng-click="searchForItem()" ng-disabled="searchItemForm.$invalid">Search</button>
+                    </form>
+                    <p>Search result:</p>
+                    <p>Searched for: {{search_term}}</p>
+                    <pre>{{item_search_result | json}}</pre>
+                </div>
+            </div>
+
 
             <div class="column">
                 <div ng-controller="GetData">
-                    <p> Peak customer info </p>
-                    <button ng-click="updateOverview()">Update overview</button>
-                    <p>{{overview_customer | json}}</p>
-                    <p>{{blub}}</p>
+                    <div>
+                        <p> Peak customer info </p>
+                        <button ng-click="updateOverviewCustomer()">Update Customer overview</button>
+                        <pre>{{overview_customer | json}}</pre>
+                    </div>
+                    <hr/>
+                    <div>
+                        <button ng-click="updateOverviewItem()">Update Item Overview</button>
+                        <pre>{{overview_item | json}}</pre>
+                    </div>
+                    <hr/>
+                    <div>
+                        <button ng-click="updateOverviewShoppingList()">Update ShoppingList Overview</button>
+                        <pre>{{overview_shopping_list | json}}</pre>
+                    </div>
+                    <br>
+                    <br>
                 </div>
             </div>
         </div>
+    <div class="row">
+        <p>{{raw_data}}   </p>
+        <hr/>
+        <p>{{raw_status}}   </p>
+        <hr/>
+        <p>{{raw_header}}   </p>
+    </div>
     </body>
 </html>

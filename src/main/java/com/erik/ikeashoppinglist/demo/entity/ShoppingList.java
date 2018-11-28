@@ -2,12 +2,14 @@ package com.erik.ikeashoppinglist.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.swagger.annotations.ApiModel;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity(name = "ShoppingList")
 @Table(name = "shopping_list")
+@ApiModel(description = "Contains the model for the Customer")
 public class ShoppingList {
 
     @Id
@@ -54,7 +56,7 @@ public class ShoppingList {
         }
     }
 
-    @ManyToOne(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToOne(fetch=FetchType.EAGER)
     private Customer customer;
 
     //@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
