@@ -9,7 +9,7 @@ import java.util.*;
 
 @Entity(name = "ShoppingList")
 @Table(name = "shopping_list")
-@ApiModel(description = "Contains the model for the Customer")
+@ApiModel(description = "Contains the entity for the Customer")
 public class ShoppingList {
 
     @Id
