@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,22 +26,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.RequestPostProcessor.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -76,6 +69,10 @@ public class SimpleShoppingListApplicationTests {
     private String serverAddress = "";
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleShoppingListApplicationTests.class);
+
+    public static String superSecretToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOlt7ImF1dG" +
+            "hvcml0eSI6IlJPTEVfQURNSU4ifV0sImlhdCI6MTU0MzUyNTEwNSwiZXhwIjoxODU5MTQ0MzA1fQ." +
+            "zQ-FvqAlwZPN8F7RJqkTUDq9_ZB7hSsnPbTAfzNy5kU";
 
     @Before
     public void init(){
@@ -140,15 +137,15 @@ public class SimpleShoppingListApplicationTests {
     }
 
     private ResultActions invokeAllCustomer(String param) throws Exception {
-        return mvc.perform(get(serverAddress+"/customer/" + param).accept(MediaType.APPLICATION_JSON));
+        return mvc.perform(get(serverAddress+"/customer/" + param).header("Authorization", "Bearer " + superSecretToken).accept(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions getShoppingList(String param) throws Exception {
-        return mvc.perform(get(serverAddress+"/shopping_list/" + param).accept(MediaType.APPLICATION_JSON));
+        return mvc.perform(get(serverAddress+"/shopping_list/" + param).header("Authorization", "Bearer " + superSecretToken).accept(MediaType.APPLICATION_JSON));
     }
     private ResultActions deleteShoppingList(String param) throws Exception {
         return this.mvc.perform(MockMvcRequestBuilders
-                .delete(serverAddress+"/shopping_list/{id}",String.valueOf(param))
+                .delete(serverAddress+"/shopping_list/{id}",String.valueOf(param)).header("Authorization", "Bearer " + superSecretToken)
                 .contentType(MediaType.APPLICATION_JSON));
     }
 
@@ -202,7 +199,7 @@ public class SimpleShoppingListApplicationTests {
 
         MvcResult temp = getShoppingList("").andReturn();
         ShoppingList[] shopping_list = fromJsonResult(temp, ShoppingList[].class);
-        LOG.debug(shopping_list.toString());
+        LOG.debug(Arrays.toString(shopping_list));
 
         MvcResult shopping_list_result = getShoppingList("")  // One should have been deleted here
                 .andExpect(status().isOk())

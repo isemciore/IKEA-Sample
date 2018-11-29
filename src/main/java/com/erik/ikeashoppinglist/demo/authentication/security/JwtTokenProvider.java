@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class JwtTokenProvider {
       expire-length: 36000000
   application.yml WILL OVERRIDE THIS VALUE*/
   @Value("${security.jwt.token.expire-length:3600000}")
-  private long validityInMilliseconds = 3600000; // 1h, THIS IS OVERRIDDEN BY application.yml
+  private int validityInMilliseconds = 3600000; // 1h, THIS IS OVERRIDDEN BY application.yml
 
   private final MyUserDetails myUserDetails;
 
@@ -58,7 +59,7 @@ public class JwtTokenProvider {
     claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority())).filter(Objects::nonNull).collect(Collectors.toList()));
 
     Date now = new Date();
-    Date validity = new Date(now.getTime() + validityInMilliseconds);
+    Date validity = DateUtils.addMilliseconds(now, validityInMilliseconds);
 
     return Jwts.builder()//
         .setClaims(claims)//
