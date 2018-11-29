@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import java.util.ArrayList;
@@ -17,11 +16,15 @@ import java.util.Arrays;
 @SpringBootApplication
 public class SimpleShoppingListApplication implements CommandLineRunner {
 
+    private final UserService userService;
+
     @Autowired
-    UserService userService;
+    public SimpleShoppingListApplication(UserService userService){
+        this.userService = userService;
+    }
 
     public static void main(String[] args) {
-        ApplicationContext applicationContext = SpringApplication.run(SimpleShoppingListApplication.class, args);
+        SpringApplication.run(SimpleShoppingListApplication.class, args);
     }
 
     @Bean
@@ -30,18 +33,18 @@ public class SimpleShoppingListApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... params) throws Exception {
+    public void run(String... params) {
         User admin = new User();
         admin.setUsername("admin");
         admin.setPassword("admin");
-        admin.setRoles(new ArrayList<Role>(Arrays.asList(Role.ROLE_ADMIN)));
+        admin.setRoles(new ArrayList<>(Arrays.asList(Role.ROLE_ADMIN)));
 
         userService.signup(admin);
 
         User client = new User();
         client.setUsername("client");
         client.setPassword("client");
-        client.setRoles(new ArrayList<Role>(Arrays.asList(Role.ROLE_CLIENT)));
+        client.setRoles(new ArrayList<>(Arrays.asList(Role.ROLE_CLIENT)));
 
         userService.signup(client);
     }

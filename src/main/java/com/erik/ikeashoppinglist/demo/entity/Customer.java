@@ -20,6 +20,7 @@ public class Customer {
     private Integer id;
 
     @Size(min=3)
+    @Column(unique = true, nullable = false)
     private String name;
 
     @OneToMany(mappedBy="customer", cascade = {CascadeType.ALL},

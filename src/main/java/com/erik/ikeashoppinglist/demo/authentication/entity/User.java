@@ -15,7 +15,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Size(min=1, message="Password mus tbe atleast 1 letter")
+    @Size(min=1, message="Password mus tbe at least 1 letter")
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)

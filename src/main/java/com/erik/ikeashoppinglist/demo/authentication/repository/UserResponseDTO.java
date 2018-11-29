@@ -4,7 +4,7 @@ import com.erik.ikeashoppinglist.demo.authentication.entity.Role;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
-//Limits the ability to get "password" object
+//Limits the ability to get "password" field
 public class UserResponseDTO {
 
   @ApiModelProperty(position = 0)

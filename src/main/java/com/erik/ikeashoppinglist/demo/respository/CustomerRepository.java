@@ -12,11 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends SearchableRepository<Customer, Integer>{
-//JpaRepository<Customer, Integer>, JpaSpecificationExecutor<Customer> {
-
-    // @Query("SELECT p FROM Partner p JOIN FETCH p.tenants WHERE p.id=(:id)")
-    //    public Partner findByIdFetchTenant(@Param("id") Long id);
     @Query("SELECT c FROM Customer c where c.name = :name")
-    public List<Customer> findCustomerByName(@Param("name") String name);
+    List<Customer> findCustomerByName(@Param("name") String name);
 
 }

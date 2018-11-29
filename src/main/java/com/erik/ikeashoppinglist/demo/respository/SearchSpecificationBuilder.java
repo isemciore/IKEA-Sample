@@ -11,16 +11,16 @@ public class SearchSpecificationBuilder<T> {
     private final List<SearchCriteria> params;
 
     public SearchSpecificationBuilder() {
-        params = new ArrayList<SearchCriteria>();
+        params = new ArrayList<>();
     }
 
-    public SearchSpecificationBuilder with(String key, String operation, Object value, String match_type) {
-        params.add(new SearchCriteria(key, operation, value, match_type));
+    public SearchSpecificationBuilder with(String key, String operation, Object value, String matchType) {
+        params.add(new SearchCriteria(key, operation, value, matchType));
         return this;
     }
 
     public Specification<T> build() {
-        if (params.size() == 0) {
+        if (params.isEmpty()) {
             return null;
         }
 

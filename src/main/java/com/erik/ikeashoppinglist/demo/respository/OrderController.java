@@ -27,25 +27,31 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
-@Api(value="ShoppingCart", description = "Operation related to the shopping cart")
+@Api(value="ShoppingCart", tags = {"OrderControllerTag"})
 public class OrderController {
 
-    @Autowired
     private CustomerRepository customerRepository;
 
-    @Autowired
     private ItemRepository itemRepository;
 
-    @Autowired
     private ShoppingListRepository shoppingListRepository;
+
+    @Autowired
+    public OrderController(CustomerRepository customerRepository, ItemRepository itemRepository,
+                           ShoppingListRepository shoppingListRepository) {
+        this.customerRepository = customerRepository;
+        this.itemRepository = itemRepository;
+        this.shoppingListRepository = shoppingListRepository;
+    }
 
     private <T> Specification<T> getSearchSpecification(String search){
         SearchSpecificationBuilder<T> builder = new SearchSpecificationBuilder<T>();
         //%21: !, %26: &, %7C: |
         // matcher splits at the symbols |&,!
-        //example: VARNAME:VALUE!VARNAME2<VALUE2
-        //Searching for entity matching name VARNAME containing VALUE and VARNAME2 with value less than VALUE2
-        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?)(,|!|&|\\|)", Pattern.UNICODE_CHARACTER_CLASS);
+        // example: VARNAME:VALUE!VARNAME2<VALUE2
+        // Searching for entity matching name VARNAME containing VALUE and VARNAME2 with value less than VALUE2
+        // Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?)(,|!|&|\\|)", Pattern.UNICODE_CHARACTER_CLASS);
+        Pattern pattern = Pattern.compile("(\\w+?)([:<>])(\\w+?)([,!&|])", Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(search + ",");
         while (matcher.find()) {
             builder.with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
@@ -56,21 +62,21 @@ public class OrderController {
 
     private <T, K> List<T> searchForWord(SearchableRepository<T, K> repository, String search){
         Specification<T> spec = getSearchSpecification(search);
-        List<T> search_result;
+        List<T> searchResult;
         if (spec == null){
-            search_result = new ArrayList<>();
+            searchResult = new ArrayList<>();
         } else {
             try {
-                search_result = repository.findAll(spec);
+                searchResult = repository.findAll(spec);
             } catch (InvalidDataAccessApiUsageException e) {
-                search_result = new ArrayList<>();
+                searchResult = new ArrayList<>();
             }
         }
-        return search_result;
+        return searchResult;
     }
 
     @ApiOperation(value="Views a list of all Customers or search")
-    @GetMapping("/customer") // Todo templify this somehow...
+    @GetMapping("/customer")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<Customer> retrieveAllCustomer(@ApiParam(value="Format: VAR(:<>)VALUE(,!?&) \nExample: name:Erik&id<20", name="search")
                                                   @RequestParam(value = "search", required = false) String search){
@@ -88,14 +94,14 @@ public class OrderController {
     @PostMapping("/customer")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Object> createCustomer(@Valid @RequestBody Customer customer){
-        List<Customer> search_result = customerRepository.findCustomerByName(customer.getName());
-        if (search_result.size() > 0) {
+        List<Customer> searchResult = customerRepository.findCustomerByName(customer.getName());
+        if (!searchResult.isEmpty()) {
             return new ResponseEntity<>("Customer already exist", HttpStatus.BAD_REQUEST);
         }
 
-        Customer newStudent = customerRepository.save(customer);
+        customerRepository.save(customer);
 
-        return new ResponseEntity<>("Updated table", HttpStatus.CREATED);
+        return new ResponseEntity<>("Updated Customer Table", HttpStatus.CREATED);
     }
 
 
@@ -108,8 +114,7 @@ public class OrderController {
             throw new InvalidKeyException("id: " + id);
         }
 
-        Customer customer = user.get();
-        return customer;
+        return user.get();
     }
 
     @ApiOperation(value="Add a new Shopping list for a customer")
@@ -117,12 +122,12 @@ public class OrderController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<Object> createNewShoppingList(@RequestBody ShoppingList shoppingList,
                                                         @PathVariable int id){
-        Optional<Customer> customer_lookup = customerRepository.findById(id);
-        if (!customer_lookup.isPresent()){
+        Optional<Customer> customerLookup = customerRepository.findById(id);
+        if (!customerLookup.isPresent()){
             throw new InvalidKeyException("id: " + id);
         }
 
-        Customer customer = customer_lookup.get();
+        Customer customer = customerLookup.get();
 
         ShoppingList newShoppingList = shoppingListRepository.save(shoppingList);
 
@@ -130,7 +135,7 @@ public class OrderController {
 
         shoppingListRepository.flush();
 
-        return new ResponseEntity<>("Updated table", HttpStatus.CREATED);
+        return new ResponseEntity<>("Added new ShoppingList for a Customer", HttpStatus.CREATED);
 
     }
 
@@ -142,8 +147,7 @@ public class OrderController {
     @GetMapping("/shopping_list")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<ShoppingList> retrieveAllShoppingList(){
-        List<ShoppingList> shoppingLists= shoppingListRepository.findAll();
-        return shoppingLists;
+        return shoppingListRepository.findAll();
     }
 
     @ApiOperation(value="Views a specific Shopping List")
@@ -159,53 +163,52 @@ public class OrderController {
     }
 
 
-    @DeleteMapping(value = {"/shopping_list/{shopping_id}"})
+    @DeleteMapping(value = {"/shopping_list/{shoppingId}"})
     @ApiOperation(value="Remove a shopping list form our DB")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-    public ResponseEntity<Object> removeShoppingList(@PathVariable int shopping_id){
+    public ResponseEntity<Object> removeShoppingList(@PathVariable int shoppingId){
 
-        Optional<ShoppingList> shoppingList_lookup = shoppingListRepository.findById(shopping_id);
-        if (!shoppingList_lookup.isPresent()){
+        Optional<ShoppingList> shoppingListLookup = shoppingListRepository.findById(shoppingId);
+        if (!shoppingListLookup.isPresent()){
             return new ResponseEntity<>("Failed to find key", HttpStatus.BAD_REQUEST);
         }
 
-        shoppingListRepository.delete(shoppingList_lookup.get());
-        return new ResponseEntity<>("Updated table and removed shopping list id: " +
-                String.valueOf(shopping_id), HttpStatus.OK);
+        shoppingListRepository.delete(shoppingListLookup.get());
+        return new ResponseEntity<>("Updated table and removed shopping list id: " +  shoppingId, HttpStatus.OK);
     }
 
-    @PostMapping(value = {"/shopping_list/{shopping_id}/item/{item_id}"})
+    @PostMapping(value = {"/shopping_list/{shoppingId}/item/{itemId}"})
     @ApiOperation(value="Add Item to a Shopping List")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<Object> updateShoppingList(@RequestParam(value = "amount", required = false) int amount,
-                                                     @PathVariable int shopping_id,
-                                                     @PathVariable int item_id){
+                                                     @PathVariable int shoppingId,
+                                                     @PathVariable int itemId){
 
-        Optional<ShoppingList> shoppingList_lookup = shoppingListRepository.findById(shopping_id);
-        if (!shoppingList_lookup.isPresent()){
-            throw new InvalidKeyException("shopping id: " + shopping_id);
+        Optional<ShoppingList> shoppingListLookup = shoppingListRepository.findById(shoppingId);
+        if (!shoppingListLookup.isPresent()){
+            return new ResponseEntity<>("Invalid ShoppingList Id", HttpStatus.BAD_REQUEST);
         }
-        Optional<Item> item_lookup = itemRepository.findById(item_id);
-        if (!item_lookup.isPresent()){
-            throw new InvalidKeyException("shopping id: " + shopping_id);
+        Optional<Item> itemLookup = itemRepository.findById(itemId);
+        if (!itemLookup.isPresent()){
+            return new ResponseEntity<>("Invalid item Id", HttpStatus.BAD_REQUEST);
         }
 
         if (amount == 0){
-            shoppingList_lookup.get().removeItem(item_lookup.get());
+            shoppingListLookup.get().removeItem(itemLookup.get());
             shoppingListRepository.flush();
-            return new ResponseEntity<>("Updated table", HttpStatus.CREATED);
+            return new ResponseEntity<>("Removed item to a ShoppingList", HttpStatus.CREATED);
         }
 
-        List<ShoppingListItem> ShoppingListItem = shoppingList_lookup.get().getItems();
-        for (ShoppingListItem sli: ShoppingListItem){
-            if (sli.getItem() == item_lookup.get()){
+        List<ShoppingListItem> shoppingListItems = shoppingListLookup.get().getItems();
+        for (ShoppingListItem sli: shoppingListItems){
+            if (sli.getItem() == itemLookup.get()){
                 sli.setAmount(amount);
                 shoppingListRepository.flush();
-                return new ResponseEntity<>("Updated table", HttpStatus.CREATED);
+                return new ResponseEntity<>("Added item to a ShoppingList", HttpStatus.CREATED);
             }
         }
 
-        shoppingList_lookup.get().addItem(item_lookup.get(), amount);
+        shoppingListLookup.get().addItem(itemLookup.get(), amount);
         shoppingListRepository.flush();
         return new ResponseEntity<>("Updated table", HttpStatus.CREATED);
     }
@@ -216,32 +219,31 @@ public class OrderController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<Item> retrieveAllItem(@ApiParam(value="Format: VAR(:<>)VALUE(,!?&) \nExample: name:Spoon&id<20", name="search")
                                           @RequestParam(value="search", required = false) String search){
-        List<Item> item_data;
+        List<Item> itemData;
         if(search == null){
-            item_data = itemRepository.findAll();
+            itemData = itemRepository.findAll();
 
         }else{
-            item_data = searchForWord(itemRepository, search);
+            itemData = searchForWord(itemRepository, search);
         }
-        return item_data;
+        return itemData;
     }
 
     @PostMapping("/item")
     @ApiOperation(value="Add new Item/Article to our Inventory")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Object> createNewShoppingList(@RequestBody Item item){
-        String item_id = item.getItemIdentification();  //Sanity check it
 
-        List<Item> search_result = itemRepository.findItemByItemIdentification(item.getItemIdentification());
-        if (search_result.size() > 0) {
+        List<Item> searchResult = itemRepository.findItemByItemIdentification(item.getItemIdentification());
+        if (!searchResult.isEmpty()) {
             return new ResponseEntity<>("Customer already exist", HttpStatus.BAD_REQUEST);
         }
         try {
-            Item newItem = itemRepository.save(item);
+            itemRepository.save(item);
         } catch (TransactionSystemException e){
             return new ResponseEntity<>("Bad Input", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Updated table", HttpStatus.CREATED);
+        return new ResponseEntity<>("Created a new Item", HttpStatus.CREATED);
     }
 
 
