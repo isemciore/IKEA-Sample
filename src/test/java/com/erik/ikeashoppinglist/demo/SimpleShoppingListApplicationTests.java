@@ -197,7 +197,7 @@ public class SimpleShoppingListApplicationTests {
         ShoppingList[] shopping_list = fromJsonResult(temp, ShoppingList[].class);
         LOG.debug(shopping_list.toString());
 
-        MvcResult shopping_list_result = getShoppingList("")
+        MvcResult shopping_list_result = getShoppingList("")  // One should have been deleted here
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andReturn();
