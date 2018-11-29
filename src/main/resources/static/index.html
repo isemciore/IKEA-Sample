@@ -1,0 +1,118 @@
+<!doctype html>
+<html ng-app="demo">
+<head>
+    <title>Admin Console</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+    <script src="js/crud_fe.js"></script>
+</head>
+    <body ng-controller="Background">
+        <p>Stuff will not work without credentials!</p>
+        <div class="row">
+            <div class="column">
+                <div ng-controller="PostObject">
+                    <div>
+                        <p>Add new Customer</p>
+                        <input type="text" ng-model="customer_name"/>
+                        <button ng-click="addCustomer()">Add Customer</button>
+                    </div>
+                    <br>
+                    <hr />
+                    <div>
+                        <p>Create new Shopping List and add to Customer</p>
+                        <form name="createCustomerForm">
+                            <input type="number" ng-model="customer_id" placeholder="Customer id" required/>
+                            <input type="text" ng-model="shopping_list_name" placeholder="Name it", required/>
+                            <button ng-click="addShoppingList()" ng-disabled="createCustomerForm.$invalid">Add Shopping List</button>
+                        </form>
+                    </div>
+                    <hr />
+                    <div>
+                        <p>Add new item</p>
+                        <form name="form">
+                            <input type="text" ng-model="item_name" placeholder="Name name" required/>
+                            <input type="text" ng-model="item_identification" placeholder="DDD-DDD-DD"
+                            ng-pattern="/^\d{3}-\d{3}-\d{2}$/" required/>
+                            <button ng-click="addItem()" ng-disabled="form.$invalid">Add Item</button>
+                        </form>
+                    </div>
+                    <hr />
+                    <div>
+                        <p>Add new item to a shopping list</p>
+                        <form name="addItemToShoppingListForm">
+                            <input type="number" ng-model="add_shopping_list_id" placeholder="Shopping list id" required/>
+                            <input type="number" ng-model="add_item_id" placeholder="Item Id" required/>
+                            <input type="number" ng-model="item_amount" placeholder="Number of items" required min="0" max="10"/>
+                            <button ng-click="addItemToShoppingList()" ng-disabled="addItemToShoppingListForm.$invalid">Add Item sl</button>
+                        </form>
+                    </div>
+                </div>
+                <hr />
+                <div ng-controller="DeleteObject">
+                    <p>Delete List</p>
+                    <form name="deleteShoppingListId">
+                        <input type="number" ng-model="delete_shopping_list_id" placeholder="List to Delete" required/>
+                        <button ng-click="removeShoppingList()" ng-disabled="deleteShoppingListId.$invalid">Delete!</button>
+                    </form>
+                    {{delete_url}}
+                </div>
+            </div>
+
+            <div class = "column">
+                <div ng-controller="SearchStuff">
+                    <form name="searchCustomerForm">
+                        <p>Search for item</p>
+                        <input type="text" ng-model="customer_search_term" placeholder="Search for Customer" required/>
+                        <button ng-click="searchForCustomer()" ng-disabled="searchCustomerForm.$invalid">Search</button>
+                    </form>
+                    <p>Search result:</p>
+                    <p>Searched for: {{customer_search_term}}</p>
+                    <p> Found in Customer DB</p>
+                    <pre>{{customer_search_result | json}}</pre>
+                    <hr/>
+                    <form name="searchItemForm">
+                        <p>Search for item</p>
+                        <input type="text" ng-model="item_search_term" placeholder="Search for Item" required/>
+                        <button ng-click="searchForItem()" ng-disabled="searchItemForm.$invalid">Search</button>
+                    </form>
+                    <p>Search result:</p>
+                    <p>Searched for: {{item_search_term}}</p>
+                    <p> Found in Customer DB</p>
+                    <pre>{{item_search_result | json}}</pre>
+
+
+                </div>
+            </div>
+
+
+            <div class="column">
+                <div ng-controller="GetData">
+                    <div>
+                        <p> Peak customer info </p>
+                        <button ng-click="updateOverviewCustomer()">Update Customer overview</button>
+                        <pre>{{overview_customer | json}}</pre>
+                    </div>
+                    <hr/>
+                    <div>
+                        <button ng-click="updateOverviewItem()">Update Item Overview</button>
+                        <pre>{{overview_item | json}}</pre>
+                    </div>
+                    <hr/>
+                    <div>
+                        <button ng-click="updateOverviewShoppingList()">Update ShoppingList Overview</button>
+                        <pre>{{overview_shopping_list | json}}</pre>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+    <div class="row">
+        <p>{{raw_data}}   </p>
+        <hr/>
+        <p>{{raw_status}}   </p>
+        <hr/>
+        <p>{{raw_header}}   </p>
+    </div>
+    </body>
+</html>
