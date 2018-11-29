@@ -1,16 +1,10 @@
 package com.erik.ikeashoppinglist.demo.entity;
 
 
-import com.erik.ikeashoppinglist.demo.respository.ShoppingListRepository;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.NaturalIdCache;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.Iterator;
 import java.util.List;
 
 @Entity
@@ -28,7 +22,7 @@ public class Customer {
     @JsonIgnore
     private List<ShoppingList> shoppingLists;
 
-    private Boolean hidden = false;
+    private Boolean hidden = false; // Hide instead of delete
 
     public Integer getId() {
         return id;

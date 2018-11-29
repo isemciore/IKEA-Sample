@@ -9,14 +9,11 @@ import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.validation.Valid;
@@ -30,11 +27,11 @@ import java.util.regex.Pattern;
 @Api(value="ShoppingCart", tags = {"OrderControllerTag"})
 public class OrderController {
 
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
-    private ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
 
-    private ShoppingListRepository shoppingListRepository;
+    private final ShoppingListRepository shoppingListRepository;
 
     @Autowired
     public OrderController(CustomerRepository customerRepository, ItemRepository itemRepository,
@@ -45,12 +42,12 @@ public class OrderController {
     }
 
     private <T> Specification<T> getSearchSpecification(String search){
-        SearchSpecificationBuilder<T> builder = new SearchSpecificationBuilder<T>();
+        SearchSpecificationBuilder<T> builder = new SearchSpecificationBuilder<>();
         //%21: !, %26: &, %7C: |
         // matcher splits at the symbols |&,!
         // example: VARNAME:VALUE!VARNAME2<VALUE2
         // Searching for entity matching name VARNAME containing VALUE and VARNAME2 with value less than VALUE2
-        // Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?)(,|!|&|\\|)", Pattern.UNICODE_CHARACTER_CLASS);
+        // base pattern("(\\w+?)(:|<|>)(\\w+?)(,|!|&|\\|)"
         Pattern pattern = Pattern.compile("(\\w+?)([:<>])(\\w+?)([,!&|])", Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(search + ",");
         while (matcher.find()) {

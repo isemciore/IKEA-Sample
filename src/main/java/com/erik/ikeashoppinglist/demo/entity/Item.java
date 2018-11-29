@@ -40,7 +40,7 @@ public class Item {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<ShoppingListItem> shoppingLists = new ArrayList<>();
+    private final List<ShoppingListItem> shoppingLists = new ArrayList<>();
 
 
     public Item() {

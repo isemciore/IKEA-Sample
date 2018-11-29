@@ -1,6 +1,5 @@
 package com.erik.ikeashoppinglist.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.annotations.ApiModel;
 
@@ -34,7 +33,7 @@ public class ShoppingList {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.EAGER)
-    private List<ShoppingListItem> items = new ArrayList<>();
+    private final List<ShoppingListItem> items = new ArrayList<>();
 
     public List<ShoppingListItem> getItems() {
         return items;
@@ -59,12 +58,6 @@ public class ShoppingList {
         }
     }
 
-
-    //@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    //@JoinTable(name="shopping_list_item",
-    //        joinColumns = { @JoinColumn(name="shopping_list_id")},
-    //        inverseJoinColumns = {@JoinColumn(name="item_id")})
-    //private Set<Item> items = new HashSet<>();
 
     public Customer getCustomer() {
         return customer;

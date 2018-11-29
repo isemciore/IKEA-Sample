@@ -16,9 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 @Api(tags = "users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public UserController(UserService userService, ModelMapper modelMapper) {
