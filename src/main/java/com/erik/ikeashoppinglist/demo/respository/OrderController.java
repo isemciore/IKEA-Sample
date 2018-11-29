@@ -12,9 +12,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.validation.Valid;
@@ -69,6 +71,7 @@ public class OrderController {
 
     @ApiOperation(value="Views a list of all Customers or search")
     @GetMapping("/customer") // Todo templify this somehow...
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<Customer> retrieveAllCustomer(@ApiParam(value="Format: VAR(:<>)VALUE(,!?&) \nExample: name:Erik&id<20", name="search")
                                                   @RequestParam(value = "search", required = false) String search){
         List<Customer> customers_data;
@@ -83,6 +86,7 @@ public class OrderController {
 
     @ApiOperation(value="Add a Customer to our DB")
     @PostMapping("/customer")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Object> createCustomer(@Valid @RequestBody Customer customer){
         List<Customer> search_result = customerRepository.findCustomerByName(customer.getName());
         if (search_result.size() > 0) {
@@ -97,6 +101,7 @@ public class OrderController {
 
     @ApiOperation(value="View a specific Customer <Todo>")
     @GetMapping("/customer/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Customer retrieveCustomer(@PathVariable int id){
         Optional<Customer> user = customerRepository.findById(id);
         if (!user.isPresent()){
@@ -109,6 +114,7 @@ public class OrderController {
 
     @ApiOperation(value="Add a new Shopping list for a customer")
     @PostMapping("/customer/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<Object> createNewShoppingList(@RequestBody ShoppingList shoppingList,
                                                         @PathVariable int id){
         Optional<Customer> customer_lookup = customerRepository.findById(id);
@@ -134,6 +140,7 @@ public class OrderController {
             @ApiResponse(code=401, message = "\"security\"")
     })
     @GetMapping("/shopping_list")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<ShoppingList> retrieveAllShoppingList(){
         List<ShoppingList> shoppingLists= shoppingListRepository.findAll();
         return shoppingLists;
@@ -141,6 +148,7 @@ public class OrderController {
 
     @ApiOperation(value="Views a specific Shopping List")
     @GetMapping("shopping_list/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ShoppingList getShoppingList(@PathVariable int id){
         Optional<ShoppingList> shoppingList = shoppingListRepository.findById(id);
         if (!shoppingList.isPresent()){
@@ -153,6 +161,7 @@ public class OrderController {
 
     @DeleteMapping(value = {"/shopping_list/{shopping_id}"})
     @ApiOperation(value="Remove a shopping list form our DB")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<Object> removeShoppingList(@PathVariable int shopping_id){
 
         Optional<ShoppingList> shoppingList_lookup = shoppingListRepository.findById(shopping_id);
@@ -166,7 +175,8 @@ public class OrderController {
     }
 
     @PostMapping(value = {"/shopping_list/{shopping_id}/item/{item_id}"})
-    @ApiOperation(value="Add Item to an Inventory")
+    @ApiOperation(value="Add Item to a Shopping List")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<Object> updateShoppingList(@RequestParam(value = "amount", required = false) int amount,
                                                      @PathVariable int shopping_id,
                                                      @PathVariable int item_id){
@@ -203,6 +213,7 @@ public class OrderController {
 
     @GetMapping("/item")
     @ApiOperation(value="View a specific item or search")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public List<Item> retrieveAllItem(@ApiParam(value="Format: VAR(:<>)VALUE(,!?&) \nExample: name:Spoon&id<20", name="search")
                                           @RequestParam(value="search", required = false) String search){
         List<Item> item_data;
@@ -217,6 +228,7 @@ public class OrderController {
 
     @PostMapping("/item")
     @ApiOperation(value="Add new Item/Article to our Inventory")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Object> createNewShoppingList(@RequestBody Item item){
         String item_id = item.getItemIdentification();  //Sanity check it
 
@@ -231,7 +243,6 @@ public class OrderController {
         }
         return new ResponseEntity<>("Updated table", HttpStatus.CREATED);
     }
-
 
 
 }
