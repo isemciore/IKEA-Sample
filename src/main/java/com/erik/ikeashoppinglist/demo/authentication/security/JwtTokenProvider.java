@@ -37,9 +37,9 @@ public class JwtTokenProvider {
   /*security:
       secret-key: secret-key
       expire-length: 36000000
-  application.yml WILL OVERRIDE THIS VALUE*/
+  application.yml Will override this value*/
   @Value("${security.jwt.token.expire-length:3600000}")
-  private int validityInMilliseconds = 3600000; // 1h, THIS IS OVERRIDDEN BY application.yml
+  private int validityInMilliseconds = 3600000;
 
   private final MyUserDetails myUserDetails;
 

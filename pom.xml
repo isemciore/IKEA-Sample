@@ -163,7 +163,6 @@
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <!-- replace `callicoder` with your docker id-->
                     <repository>erik/</repository>
                     <tag>${project.version}</tag>
                     <buildArgs>
@@ -176,6 +175,7 @@
                         <phase>install</phase>
                         <goals>
                             <goal>build</goal>
+                            <goal>push</goal>
                         </goals>
                     </execution>
                 </executions>
