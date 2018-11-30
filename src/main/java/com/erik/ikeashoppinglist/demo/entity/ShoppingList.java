@@ -35,6 +35,17 @@ public class ShoppingList {
             fetch = FetchType.EAGER)
     private final List<ShoppingListItem> items = new ArrayList<>();
 
+    @PreRemove
+    private void removeItemAssociationOnListDelete(){
+        for (Iterator<ShoppingListItem> it = items.iterator();  it.hasNext(); ){
+            ShoppingListItem shoppingListItem = it.next();
+            it.remove();
+            shoppingListItem.getItem().getShoppingLists().remove(shoppingListItem);
+            shoppingListItem.setItem(null);
+            shoppingListItem.setShoppingList(null);
+        }
+    }
+
     public List<ShoppingListItem> getItems() {
         return items;
     }

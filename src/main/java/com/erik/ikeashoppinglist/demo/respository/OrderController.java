@@ -6,6 +6,8 @@ import com.erik.ikeashoppinglist.demo.entity.Item;
 import com.erik.ikeashoppinglist.demo.entity.ShoppingList;
 import com.erik.ikeashoppinglist.demo.entity.ShoppingListItem;
 import io.swagger.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,6 +28,8 @@ import java.util.regex.Pattern;
 @RestController
 @Api(value="ShoppingCart", tags = {"OrderControllerTag"})
 public class OrderController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OrderController.class);
 
     private final CustomerRepository customerRepository;
 
@@ -170,7 +174,8 @@ public class OrderController {
             return new ResponseEntity<>("Failed to find key", HttpStatus.BAD_REQUEST);
         }
 
-        shoppingListRepository.delete(shoppingListLookup.get());
+        shoppingListRepository.deleteById(shoppingId);
+
         return new ResponseEntity<>("Updated table and removed shopping list id: " +  shoppingId, HttpStatus.OK);
     }
 

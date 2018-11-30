@@ -32,7 +32,6 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,20 +136,27 @@ public class SimpleShoppingListApplicationTests {
     }
 
     private ResultActions invokeAllCustomer(String param) throws Exception {
-        return mvc.perform(get(serverAddress+"/customer/" + param).header("Authorization", "Bearer " + superSecretToken).accept(MediaType.APPLICATION_JSON));
+        return mvc.perform(get(serverAddress+"/customer/" + param)
+                .header("Authorization", "Bearer " + superSecretToken)
+                .accept(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions getShoppingList(String param) throws Exception {
-        return mvc.perform(get(serverAddress+"/shopping_list/" + param).header("Authorization", "Bearer " + superSecretToken).accept(MediaType.APPLICATION_JSON));
+        return mvc.perform(get(serverAddress+"/shopping_list/" + param)
+                .header("Authorization", "Bearer " + superSecretToken)
+                .accept(MediaType.APPLICATION_JSON));
     }
     private ResultActions deleteShoppingList(String param) throws Exception {
         return this.mvc.perform(MockMvcRequestBuilders
-                .delete(serverAddress+"/shopping_list/{id}",String.valueOf(param)).header("Authorization", "Bearer " + superSecretToken)
+                .delete(serverAddress+"/shopping_list/{id}",String.valueOf(param))
+                .header("Authorization", "Bearer " + superSecretToken)
                 .contentType(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions getItem(String param) throws Exception {
-        return mvc.perform(get(serverAddress+"/item/" + param).accept(MediaType.APPLICATION_JSON));
+        return mvc.perform(get(serverAddress+"/item/" + param)
+                .header("Authorization", "Bearer " + superSecretToken)
+                .accept(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -193,13 +199,9 @@ public class SimpleShoppingListApplicationTests {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andReturn();
 
-        MvcResult delete_res = deleteShoppingList(String.valueOf(shopping_list_id)).andReturn();
-        LOG.debug(delete_res.toString());
-        // No clue what this broken, manual test shows all is fine...
+        deleteShoppingList(String.valueOf(shopping_list_id)).andReturn();
 
         MvcResult temp = getShoppingList("").andReturn();
-        ShoppingList[] shopping_list = fromJsonResult(temp, ShoppingList[].class);
-        LOG.debug(Arrays.toString(shopping_list));
 
         MvcResult shopping_list_result = getShoppingList("")  // One should have been deleted here
                 .andExpect(status().isOk())
@@ -211,11 +213,19 @@ public class SimpleShoppingListApplicationTests {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name", is("Alice")))
                 .andReturn();
-        MvcResult item = invokeAllCustomer("")
+
+        MvcResult temp1 = getItem("").andReturn();
+
+        MvcResult item = getItem("")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$.name", is("Spork")))
+                .andExpect(jsonPath("$[0].name", is("Spork")))
                 .andReturn();
+
+        //Debug stuff:
+        //Item[] item_res = fromJsonResult(temp1, Item[].class);
+        //LOG.debug(Arrays.toString(item_res));
+
     }
     // Some stuff to test:
     // Stuff to implement -> 0 will remove relationship to item
