@@ -5,19 +5,19 @@ dockerd
 
 2. Package the code
 
-mvn package
+- mvn package
 
 3. build the docker image
 
-docker build -t ikea-shopping-list-demo .
+- docker build -t ikea-shopping-list-demo .
 
 verify it was created recently:
 
-docker image ls
+- docker image ls
 
 3. Run the image (Standalone)
 
-docker run -d -p 5000:8080 ikea-shopping-list-demo
+- docker run -d -p 5000:8080 ikea-shopping-list-demo
 
 (-d executes in background so wait a while for server to startup)
 Runs docker in background and portforward 5000 to 8080
